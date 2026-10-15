@@ -34,7 +34,7 @@ jobs:
 
           # Output JSON
           echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT
-          # echo "$JSON_OUTPUT" | jq .
+          # echo "$JSON_OUTPUT"
 
       - name: Display completion message
         id: return_result
