@@ -13,12 +13,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
+        id: title
         uses: actions/checkout@v4
-
-      - name: Run scheduled task
+        
+      - name: Run scheduled task and generate JSON output
+        id: main
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           EMOJI=$(shuf -e 🎉 🚀 ✨ 🌟 💫 🎊 🎈 ⭐ 🎁 🌈 -n 1)
-          echo "Timestamp: $TIMESTAMP"
           echo "hello world"
-          echo "Emoji: $EMOJI"
+
+          # Create JSON output
+          JSON_OUTPUT = $(cat <<EOF
+          {
+            "status": "success",
+            "message": "Scheduled workflow completed successfully",
+            "timestamp": "$TIMESTAMP",
+            "emoji": "$EMOJI",
+            "repository": "${{ github.repository }}",
+            "run_id": "${{ github.run_id }}",
+            "trigger": "${{ inputs.trigger_reason }}"
+          }
+          EOF
+          )
+
+          # Output JSON
+          echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT
+          # echo "$JSON_OUTPUT" | jq .
+
+      - name: Display completion message
+        id: return_result
+        run: |
+          echo "✅ Job completed!"
+          echo "${{ steps.main.outputs.result }}" | jq .
