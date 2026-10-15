@@ -25,17 +25,12 @@ jobs:
 
           # Create JSON output
           JSON_OUTPUT=$(cat <<EOF
-          {
-            "status": "success",
-            "message": "Scheduled workflow completed successfully",
-            "timestamp": "$TIMESTAMP",
-            "emoji": "$EMOJI",
-            "repository": "${{ github.repository }}",
-            "run_id": "${{ github.run_id }}",
-            "trigger": "${{ inputs.trigger_reason }}"
-          }
+          {"status": "success","message": "Scheduled workflow completed successfully","timestamp": "$TIMESTAMP","emoji": "$EMOJI","repository": "${{ github.repository }}","run_id": "${{ github.run_id }}","trigger": "${{ inputs.trigger_reason }}"}
           EOF
           )
+
+          # Remove any leading/trailing whitespace
+          JSON_OUTPUT=$(echo "$JSON_OUTPUT" | tr -d '\n' | xargs)
 
           # Output JSON
           echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT
