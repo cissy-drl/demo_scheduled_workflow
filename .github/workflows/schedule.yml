@@ -30,7 +30,7 @@ jobs:
           )
 
           # Remove any leading/trailing whitespace
-          JSON_OUTPUT=$(echo "$JSON_OUTPUT" | tr -d '\n' | xargs)
+          JSON_OUTPUT=$(echo "$JSON_OUTPUT" | tr -d '\n' | sed 's/^[[:space:]]*//g' | sed 's/[[:space:]]*$//g')
 
           # Output JSON
           echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT
