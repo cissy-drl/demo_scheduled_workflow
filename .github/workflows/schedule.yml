@@ -24,7 +24,7 @@ jobs:
           echo "hello world"
 
           # Create JSON output
-          JSON_OUTPUT = $(cat <<EOF
+          JSON_OUTPUT=$(cat <<EOF
           {
             "status": "success",
             "message": "Scheduled workflow completed successfully",
