@@ -22,43 +22,10 @@ jobs:
           TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           EMOJI=$(shuf -e 🎉 🚀 ✨ 🌟 💫 🎊 🎈 ⭐ 🎁 🌈 -n 1)
           echo "hello world"
-
-          ## Method 2
-          ## Use jq to build the JSON properly - it handles escaping
-          ## JSON_OUTPUT=$(jq -cn \
-          ##  --arg status "success" \
-          ##  --arg message "Scheduled workflow completed successfully" \
-          ##  --arg timestamp "$TIMESTAMP" \
-          ##  --arg emoji "$EMOJI" \
-          ##  --arg repository "${{ github.repository }}" \
-          ##  --arg run_id "${{ github.run_id }}" \
-          ##  --arg trigger "${{ inputs.trigger_reason }}" \
-          ##  '{"status": $status, "message": $message, "timestamp": $timestamp, "emoji": $emoji, "repository": $repository, "run_id": $run_id, "trigger": $trigger}')
-  
-          ## echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT
-
-          ## Method 3
-          ## Create JSON output
-          ## JSON_OUTPUT="{\"status\":\"success\",\"message\":\"Scheduled workflow completed successfully\",\"timestamp\":\"$TIMESTAMP\",\"emoji\":\"$EMOJI\",\"repository\":\"${{ github.repository }}\",\"run_id\":\"${{ github.run_id }}\",\"trigger\":\"${{ inputs.trigger_reason }}\"}"
-
-          ## Use printf instead of echo to avoid newline issues
-          ## printf 'result=%s\n' "$JSON_OUTPUT" >> $GITHUB_OUTPUT
-
-          ## Method 4
-          ## Create JSON output using heredoc, buggy at command "jq ." in display step
-          ## JSON_OUTPUT=$(cat <<EOF
-          ## {"status":"success","message":"Scheduled workflow completed successfully","timestamp":"$TIMESTAMP","emoji":"$EMOJI","repository":"${{ github.repository }}","run_id":"${{ github.run_id }}","trigger":"${{ inputs.trigger_reason }}"}
-          ## EOF
-          ## )
-
-          ## Remove any leading/trailing whitespace
-          ## JSON_OUTPUT=$(echo "$JSON_OUTPUT" | tr -d '\n' | sed 's/^[[:space:]]*//g' | sed 's/[[:space:]]*$//g')
-
-          ## Output JSON
-          ## echo "result<<EOF" >> $GITHUB_OUTPUT
-          ## echo "$JSON_OUTPUT" >> $GITHUB_OUTPUT
-          ## echo "EOF" >> $GITHUB_OUTPUT
-          ## echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT 
+          JSON_OUTPUT=$(cat <<EOF
+          {"status":"success","message":"Scheduled workflow completed successfully","timestamp":"$TIMESTAMP","emoji":"$EMOJI","repository":"${{ github.repository }}","run_id":"${{ github.run_id }}","trigger":"${{ inputs.trigger_reason }}"}
+          EOF
+          )
 
       - name: Display completion message
         id: return_result
@@ -74,16 +41,6 @@ jobs:
             --arg trigger "${{ inputs.trigger_reason }}" \
             '{"status": $status, "message": $message, "timestamp": $timestamp, "emoji": $emoji, "repository": $repository, "run_id": $run_id, "trigger": $trigger}'
           
-          ## method 2, 3 for debug
-          ## echo "Raw output:"
-          ## echo "${{ steps.main.outputs.result }}"
-          ## echo "---"
-          ## echo "With od to see hex:"
-          ## echo "${{ steps.main.outputs.result }}" | od -c
-          ## echo "---"
-          ## echo "${{ steps.main.outputs.result }}" | jq .
-          ## echo "${{ steps.main.outputs.result }}"
-          
       - name: Send success notification to cron-job.org
         id: send_notification
         if: success()
@@ -92,8 +49,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "status": "success",
-              "message": "${{ steps.main.outputs.result }}",
-              "timestamp": "'$TIMESTAMP'",
+              "message": "${{ steps.main.outputs.JSON_OUTPUT }}",
+              "timestamp": "${{ steps.main.outputs.TIMESTAMP }}",
               "run_id": "${{ github.run_id }}"
             }'
 
