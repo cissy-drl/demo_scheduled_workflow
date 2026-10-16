@@ -29,7 +29,7 @@ jobs:
           # Use printf instead of echo to avoid newline issues
           printf 'result=%s\n' "$JSON_OUTPUT" >> $GITHUB_OUTPUT
 
-          ## Create JSON output using heredoc, buggy at command "jq ."
+          ## Create JSON output using heredoc, buggy at command "jq ." in display step
           ## JSON_OUTPUT=$(cat <<EOF
           ## {"status":"success","message":"Scheduled workflow completed successfully","timestamp":"$TIMESTAMP","emoji":"$EMOJI","repository":"${{ github.repository }}","run_id":"${{ github.run_id }}","trigger":"${{ inputs.trigger_reason }}"}
           ## EOF
@@ -48,7 +48,7 @@ jobs:
         id: return_result
         run: |
           echo "✅ Job completed!"
-          echo "${{ steps.main.outputs.result }}"
+          echo "${{ steps.main.outputs.result }}" | jq .
           
       - name: Send success notification to cron-job.org
         if: success()
