@@ -57,7 +57,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "status": "success",
-              "message": "Workflow completed successfully",
+              "message": "${{ steps.main.outputs.result }}",
               "timestamp": "'$TIMESTAMP'",
               "run_id": "${{ github.run_id }}"
             }'
