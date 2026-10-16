@@ -48,17 +48,24 @@ jobs:
         id: return_result
         run: |
           echo "✅ Job completed!"
+          echo "Raw output:"
           echo "${{ steps.main.outputs.result }}"
+          echo "---"
+          echo "With od to see hex:"
+          echo "${{ steps.main.outputs.result }}" | od -c
+          echo "---"
+          echo "${{ steps.main.outputs.result }}" | jq .
+          # echo "${{ steps.main.outputs.result }}"
           
-      - name: Send success notification to cron-job.org
-        if: success()
-        run: |
-          curl -X POST "${{ secrets.CRONJOBORG_CALLBACK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "status": "success",
-              "message": "${{ steps.main.outputs.result }}",
-              "timestamp": "'$TIMESTAMP'",
-              "run_id": "${{ github.run_id }}"
-            }'
+#      - name: Send success notification to cron-job.org
+#        if: success()
+#        run: |
+#          curl -X POST "${{ secrets.CRONJOBORG_CALLBACK_URL }}" \
+#            -H "Content-Type: application/json" \
+#            -d '{
+#              "status": "success",
+#              "message": "${{ steps.main.outputs.result }}",
+#              "timestamp": "'$TIMESTAMP'",
+#              "run_id": "${{ github.run_id }}"
+#            }'
 
