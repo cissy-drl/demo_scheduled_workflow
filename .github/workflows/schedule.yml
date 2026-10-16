@@ -23,12 +23,28 @@ jobs:
           EMOJI=$(shuf -e 🎉 🚀 ✨ 🌟 💫 🎊 🎈 ⭐ 🎁 🌈 -n 1)
           echo "hello world"
 
-          # Create JSON output
-          JSON_OUTPUT="{\"status\":\"success\",\"message\":\"Scheduled workflow completed successfully\",\"timestamp\":\"$TIMESTAMP\",\"emoji\":\"$EMOJI\",\"repository\":\"${{ github.repository }}\",\"run_id\":\"${{ github.run_id }}\",\"trigger\":\"${{ inputs.trigger_reason }}\"}"
+          ## Method 1
+          # Use jq to build the JSON properly - it handles escaping
+          JSON_OUTPUT=$(jq -n \
+            --arg status "success" \
+            --arg message "Scheduled workflow completed successfully" \
+            --arg timestamp "$TIMESTAMP" \
+            --arg emoji "$EMOJI" \
+            --arg repository "${{ github.repository }}" \
+            --arg run_id "${{ github.run_id }}" \
+            --arg trigger "${{ inputs.trigger_reason }}" \
+            '{status: $status, message: $message, timestamp: $timestamp, emoji: $emoji, repository: $repository, run_id: $run_id, trigger: $trigger}')
+  
+          echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT
 
-          # Use printf instead of echo to avoid newline issues
-          printf 'result=%s\n' "$JSON_OUTPUT" >> $GITHUB_OUTPUT
+          ## Method 2
+          ## Create JSON output
+          ## JSON_OUTPUT="{\"status\":\"success\",\"message\":\"Scheduled workflow completed successfully\",\"timestamp\":\"$TIMESTAMP\",\"emoji\":\"$EMOJI\",\"repository\":\"${{ github.repository }}\",\"run_id\":\"${{ github.run_id }}\",\"trigger\":\"${{ inputs.trigger_reason }}\"}"
 
+          ## Use printf instead of echo to avoid newline issues
+          ## printf 'result=%s\n' "$JSON_OUTPUT" >> $GITHUB_OUTPUT
+
+          ## Method 3
           ## Create JSON output using heredoc, buggy at command "jq ." in display step
           ## JSON_OUTPUT=$(cat <<EOF
           ## {"status":"success","message":"Scheduled workflow completed successfully","timestamp":"$TIMESTAMP","emoji":"$EMOJI","repository":"${{ github.repository }}","run_id":"${{ github.run_id }}","trigger":"${{ inputs.trigger_reason }}"}
