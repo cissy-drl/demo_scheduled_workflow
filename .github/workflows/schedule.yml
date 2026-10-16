@@ -26,6 +26,9 @@ jobs:
           {"status":"success","message":"Scheduled workflow completed successfully","timestamp":"$TIMESTAMP","emoji":"$EMOJI","repository":"${{ github.repository }}","run_id":"${{ github.run_id }}","trigger":"${{ inputs.trigger_reason }}"}
           EOF
           )
+          printf 'json_output=%s\n' "$JSON_OUTPUT" >> $GITHUB_OUTPUT
+          printf 'ts=%s\n' "$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo 'icon=$EMOJI' >> $GITHUB_OUTPUT
 
       - name: Display completion message
         id: return_result
@@ -34,8 +37,8 @@ jobs:
           jq -n \
             --arg status "success" \
             --arg message "Scheduled workflow completed successfully" \
-            --arg timestamp "${{ steps.main.outputs.TIMESTAMP }}" \
-            --arg emoji "${{ steps.main.outputs.EMOJI }}" \
+            --arg timestamp "${{ steps.main.outputs.ts }}" \
+            --arg emoji "${{ steps.main.outputs.icon }}" \
             --arg repository "${{ github.repository }}" \
             --arg run_id "${{ github.run_id }}" \
             --arg trigger "${{ inputs.trigger_reason }}" \
@@ -49,8 +52,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
               "status": "success",
-              "message": "${{ steps.main.outputs.JSON_OUTPUT }}",
-              "timestamp": "${{ steps.main.outputs.TIMESTAMP }}",
+              "message": "${{ steps.main.outputs.json_output }}",
+              "timestamp": "${{ steps.main.outputs.ts }}",
               "run_id": "${{ github.run_id }}"
             }'
 
