@@ -25,7 +25,7 @@ jobs:
 
           ## Method 1
           # Use jq to build the JSON properly - it handles escaping
-          JSON_OUTPUT=$(jq -n \
+          JSON_OUTPUT=$(jq -cn \
             --arg status "success" \
             --arg message "Scheduled workflow completed successfully" \
             --arg timestamp "$TIMESTAMP" \
