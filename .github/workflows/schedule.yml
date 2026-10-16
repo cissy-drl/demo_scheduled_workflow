@@ -49,7 +49,7 @@ jobs:
         if: success()
         run: |
           curl -X POST "${{ secrets.CRONJOBORG_CALLBACK_URL }}" \
-            -H "Authorization: Bearer ${{ secrets.CRONJOB_API_KEY }}"
+            -H "Authorization: Bearer ${{ secrets.CRONJOB_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
               "status": "success",
