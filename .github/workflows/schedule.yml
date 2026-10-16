@@ -33,7 +33,7 @@ jobs:
             --arg repository "${{ github.repository }}" \
             --arg run_id "${{ github.run_id }}" \
             --arg trigger "${{ inputs.trigger_reason }}" \
-            '{status: $status, message: $message, timestamp: $timestamp, emoji: $emoji, repository: $repository, run_id: $run_id, trigger: $trigger}')
+            '{"status": $status, "message": $message, "timestamp": $timestamp, "emoji": $emoji, "repository": $repository, "run_id": $run_id, "trigger": $trigger}')
   
           echo "result=$JSON_OUTPUT" >> $GITHUB_OUTPUT
 
