@@ -43,18 +43,3 @@ jobs:
             --arg run_id "${{ github.run_id }}" \
             --arg trigger "${{ inputs.trigger_reason }}" \
             '{"status": $status, "message": $message, "timestamp": $timestamp, "emoji": $emoji, "repository": $repository, "run_id": $run_id, "trigger": $trigger}'
-          
-      - name: Send success notification to cron-job.org
-        id: send_notification
-        if: success()
-        run: |
-          curl -X POST "${{ secrets.CRONJOBORG_CALLBACK_URL }}" \
-            -H "Authorization: Bearer ${{ secrets.CRONJOB_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "status": "success",
-              "message": "${{ steps.main.outputs.json_output }}",
-              "timestamp": "${{ steps.main.outputs.ts }}",
-              "run_id": "${{ github.run_id }}"
-            }'
-
